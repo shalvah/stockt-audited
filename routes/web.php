@@ -18,3 +18,7 @@ Auth::routes();
 Route::redirect('/home', '/products')->name('home');
 
 Route::resource('products', 'ProductController')->middleware('auth');
+
+Route::get('audits', function () {
+    return view('audits', ['audits' => OwenIt\Auditing\Models\Audit::all()]);
+})->middleware(\App\Http\Middleware\AllowOnlyAdmin::class);
