@@ -16,7 +16,7 @@
             <tbody id="audits">
             @foreach($audits as $audit)
                 <tr>
-                    <td>{{ $audit->auditable_type }}</td>
+                    <td>{{ $audit->auditable_type }} (id: {{ $audit->auditable_id }})</td>
                     <td>{{ $audit->event }}</td>
                     <td>{{ $audit->user->name }}</td>
                     <td>{{ $audit->created_at }}</td>
@@ -56,7 +56,7 @@
     socket.subscribe('audits')
         .bind('new-audit', function (data) {
             audit = data.audit;
-            var $modelCell = $('<td>').text(audit.auditable_type);
+            var $modelCell = $('<td>').text(audit.auditable_type + '(id: ' + audit.auditable_id + ')');
             var $eventCell = $('<td>').text(audit.event);
             var $userCell = $('<td>').text(audit.user_name);
             var $timeCell = $('<td>').text(audit.created_at);
@@ -65,7 +65,10 @@
                 var $table = $('<table>').addClass('table');
                 for (attribute in values) {
                     $table.append(
-                        $('<tr>').append($('<td>').text(attribute), $('<td>').text(values[attribute]))
+                        $('<tr>').append(
+                            $('<td>').text(attribute),
+                            $('<td>').text(values[attribute])
+                        )
                     );
                 }
                 return $table;
