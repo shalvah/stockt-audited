@@ -5,7 +5,6 @@
         <table class="table">
             <thead class="thead-dark">
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Model</th>
                 <th scope="col">Action</th>
                 <th scope="col">User</th>
@@ -14,36 +13,31 @@
                 <th scope="col">New Values</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="audits">
             @foreach($audits as $audit)
                 <tr>
-                    <th scope="row">{{ $loop->index + 1 }}</th>
                     <td>{{ $audit->auditable_type }}</td>
                     <td>{{ $audit->event }}</td>
-                    <td>{{ $audit->user->name }}&nbsp;({{ $audit->user_id }})</td>
-                    <td>{{ $audit->created_at->diffForHumans() }}</td>
+                    <td>{{ $audit->user->name }}</td>
+                    <td>{{ $audit->created_at }}</td>
                     <td>
                         <table class="table">
-                            <tbody>
                             @foreach($audit->old_values as $attribute => $value)
                                 <tr>
                                     <td><b>{{ $attribute }}</b></td>
                                     <td>{{ $value }}</td>
                                 </tr>
                             @endforeach
-                            </tbody>
                         </table>
                     </td>
                     <td>
                         <table class="table">
-                            <tbody>
                             @foreach($audit->new_values as $attribute => $value)
                                 <tr>
                                     <td><b>{{ $attribute }}</b></td>
                                     <td>{{ $value }}</td>
                                 </tr>
                             @endforeach
-                            </tbody>
                         </table>
                     </td>
                 </tr>
@@ -53,3 +47,43 @@
 
     </div>
 @endsection
+
+<script src="https://js.pusher.com/4.2/pusher.min.js"></script>
+<script>
+    var socket = new Pusher("your-app-key", {
+        cluster: 'your-app-cluster',
+    });
+    socket.subscribe('audits')
+        .bind('new-audit', function (data) {
+            audit = data.audit;
+            var $modelCell = $('<td>').text(audit.auditable_type);
+            var $eventCell = $('<td>').text(audit.event);
+            var $userCell = $('<td>').text(audit.user_name);
+            var $timeCell = $('<td>').text(audit.created_at);
+
+            function createSubTable(values) {
+                var $table = $('<table>').addClass('table');
+                for (attribute in values) {
+                    $table.append(
+                        $('<tr>').append($('<td>').text(attribute), $('<td>').text(values[attribute]))
+                    );
+                }
+                return $table;
+            }
+
+            var $oldValuesTable = createSubTable(audit.old_values)
+            var $newValuesTable = createSubTable(audit.new_values)
+
+            var $oldValuesCell = $('<td>').append($oldValuesTable);
+            var $newValuesCell = $('<td>').append($newValuesTable);
+
+            $newRow = $('<tr>').append(
+                $modelCell,
+                $eventCell,
+                $userCell,
+                $timeCell,
+                $oldValuesCell,
+                $newValuesCell);
+            $('#audits').prepend($newRow);
+        });
+</script>

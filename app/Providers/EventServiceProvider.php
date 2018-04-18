@@ -13,9 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\Event' => [
-            'App\Listeners\EventListener',
-        ],
+        \OwenIt\Auditing\Events\Audited::class => [
+            \App\Listeners\AuditedListener::class
+            ]
     ];
 
     /**
