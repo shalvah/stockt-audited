@@ -7,10 +7,11 @@ Demo stock management app built with Laravel. The app has an audit dashboard tha
 - A [Pusher account](https://pusher.com/signup) and [Pusher app credentials](http://dashboard.pusher.com/)
 
 ## Getting started
-Clone the project:
+Clone the project and install dependencies:
 
 ```bash
 git clone https://github.com/shalvah/stockt-audited
+cd stockt-audited && composer install
 ```
 
 Copy the `.env.example` file to a `.env` file. Add your Pusher app credentials to this file:
@@ -23,11 +24,11 @@ PUSHER_APP_CLUSTER=your-app-cluster
 
 Look for these lines of JavaScript in `resources/views/audits.blade.php`:
 ```javascript
-var pusher = new Pusher('your-app-id', {
+var pusher = new Pusher('your-app-key', {
     cluster: 'your-app-cluster'
 });
 ```
-Insert your Pusher app ID and cluster in the appropriate places.
+Insert your Pusher app key and cluster in the appropriate places.
 
 Create an empty file, `database/database.sqlite`.
 
